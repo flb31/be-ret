@@ -3,6 +3,7 @@
 var Specialty = require('../models/specialty')
 var config = require('../config')
 var mongoose = require('mongoose');
+var moment = require('moment');
 
 function index(req, res) {
     const page = req.params.page ? req.params.page : config.pagination.page
@@ -17,7 +18,34 @@ function index(req, res) {
 }
 
 function create(req, res) {
-    res.status(201).send({ message: 'Specialty create' })
+    
+    var specialty = new Specialty()
+
+    var params = req.body
+
+    specialty.name = params.name
+    specialty.createdAt = moment().format()
+    specialty.updatedAt = specialty.createdAt
+    
+    if(!specialty.name) {
+        return res.status(400).send({message: 'Name is required'})
+    }
+
+    specialty.save((err, specialtyStored) => {
+        if(err) {
+            return res.status(500).send({
+                message: 'Error save specialty',
+                err,
+            })
+        }
+
+        if(!specialtyStored) {
+            return res.status(404).send({message: 'Specialty not created'})
+        }
+
+        res.status(201).send({ specialty: specialtyStored })
+    })
+    
 }
 
 function update(req, res) {
