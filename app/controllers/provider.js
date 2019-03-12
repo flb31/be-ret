@@ -73,7 +73,56 @@ function create(req, res) {
 }
 
 function update(req, res) {
-    res.status(200).send({ message: 'Provider update' })
+    const id = req.params.id
+    const provider = req.body
+
+    provider.updatedAt = moment().format()
+
+    if( !mongoUtil.isValidateId(id) ) {
+        return res.status(400).send({ message: 'Invalid id' })
+    }
+
+    // Validations
+    if(!provider.firstName) {
+        return res.status(400).send({message: 'Name is required'})
+    }
+
+    if(!provider.lastName) {
+        return res.status(400).send({message: 'Last Name is required'})
+    }
+
+    if( !stringUtil.isEmail(provider.email) ) {
+        return res.status(400).send({message: 'Email is not valid'})
+    }
+
+    if(!stringUtil.isStatusValid(provider.status) ) {
+        return res.status(400).send({message: 'Status is not valid'})
+    }
+
+    if( !mongoUtil.isValidateId(provider.specialty) ) {
+        return res.status(400).send({message: 'Specialty ID is not valid'})
+    }
+    
+
+    Provider.findByIdAndUpdate(id, provider, (err, prUpdated) => {
+        if(!prUpdated) {
+            return res.status(404).send({
+                message: 'Provider Not Found',
+            })
+        }
+
+        if(err) {
+            return res.status(500).send({
+                message: 'Error updating Provider',
+                err,
+            })
+        }
+
+        res.status(200).send({
+            message: 'Provider updated',
+            provider: prUpdated,
+        })
+    })
 }
 
 function show(req, res) {
