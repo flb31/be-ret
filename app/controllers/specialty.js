@@ -4,6 +4,7 @@ var Specialty = require('../models/specialty')
 var config = require('../config')
 var mongoose = require('mongoose');
 var moment = require('moment');
+var mongoUtil = require('../util/mongo');
 
 function index(req, res) {
     const page = req.params.page ? req.params.page : config.pagination.page
@@ -54,7 +55,7 @@ function update(req, res) {
 
     specialty.updatedAt = moment().format()
 
-    if(validateId(id) ){
+    if( !mongoUtil.isValidateId(id) ) {
         return res.status(400).send({ message: 'Invalid id' })
     }
 
@@ -82,7 +83,7 @@ function update(req, res) {
 function show(req, res) {
     var id = req.params.id
 
-    if(validateId(id) ){
+    if( !mongoUtil.isValidateId(id) ) {
         return res.status(400).send({ message: 'Invalid id' })
     }
 
@@ -111,7 +112,7 @@ function remove(req, res) {
 
     var id = req.params.id
 
-    if(validateId(id) ){
+    if( !mongoUtil.isValidateId(id) ) {
         return res.status(400).send({ message: 'Invalid id' })
     }
 
@@ -127,10 +128,6 @@ function remove(req, res) {
             message: 'Specialty remove successfully'
         })
     })
-}
-
-function validateId(id) {
-    return !mongoose.Types.ObjectId.isValid(id)
 }
 
 module.exports = {
