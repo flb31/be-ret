@@ -6,7 +6,7 @@ var router = express.Router()
 var ProviderController = require('../controllers/provider')
 var mdAuth = require('../middlewares/authenticated')
 
-router.get('/', ProviderController.index )
+router.get('/:page?', ProviderController.index )
 router.post('/', mdAuth.ensureAuth, ProviderController.create )
 router.get('/:id', ProviderController.show )
 router.put('/:id', mdAuth.ensureAuth, ProviderController.update )

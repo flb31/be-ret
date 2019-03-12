@@ -1,9 +1,18 @@
 'use strict'
 
 var Specialty = require('../models/specialty')
+var config = require('../config')
 
 function index(req, res) {
-    res.status(200).send({ message: 'Specialties' })
+    const page = req.params.page ? req.params.page : config.pagination.page
+    const options = {
+        ...config.pagination,
+        page,
+    }
+
+    Specialty.paginate({}, options, (err, resPaginate) => {
+        res.status(200).send( resPaginate )
+    })
 }
 
 function create(req, res) {

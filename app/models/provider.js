@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var mongoosePaginate = require('mongoose-paginate-v2')
 
 var ProviderSchema = Schema({
     firstName: String,
@@ -16,5 +17,7 @@ var ProviderSchema = Schema({
     createdAt: Date,
     updatedAt: Date,
 })
+
+ProviderSchema.plugin(mongoosePaginate)
 
 module.exports = mongoose.model('providers', ProviderSchema)
