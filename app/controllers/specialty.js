@@ -19,9 +19,9 @@ function index(req, res) {
 
 function create(req, res) {
     
-    var specialty = new Specialty()
+    const specialty = new Specialty()
 
-    var params = req.body
+    const params = req.body
 
     specialty.name = params.name
     specialty.createdAt = moment().format()
@@ -49,7 +49,34 @@ function create(req, res) {
 }
 
 function update(req, res) {
-    res.status(200).send({ message: 'Specialty update' })
+    const id = req.params.id
+    const specialty = req.body
+
+    specialty.updatedAt = moment().format()
+
+    if( !mongoose.Types.ObjectId.isValid(id) ) {
+        return res.status(400).send({ message: 'Invalid id' })
+    }
+
+    Specialty.findByIdAndUpdate(id, specialty, (err, spUpdated) => {
+        if(!spUpdated) {
+            return res.status(404).send({
+                message: 'Specialty Not Found',
+            })
+        }
+
+        if(err) {
+            return res.status(500).send({
+                message: 'Error updating Specialty',
+                err,
+            })
+        }
+
+        res.status(200).send({
+            message: 'Specialty updated',
+            specialty: spUpdated
+        })
+    })
 }
 
 function show(req, res) {
