@@ -154,7 +154,24 @@ function show(req, res) {
 }
 
 function remove(req, res) {
-    res.status(204).send({ message: 'Provider delete' })
+    var id = req.params.id
+
+    if( !mongoUtil.isValidateId(id) ) {
+        return res.status(400).send({ message: 'Invalid id' })
+    }
+
+    Provider.findById(id).remove( (err) => {
+        if(err) {
+            return res.status(500).send({
+                message: 'Error remove Provider',
+                err,
+            })
+        }
+
+        return res.status(200).send({
+            message: 'Provider remove successfully'
+        })
+    })
 }
 
 module.exports = {
