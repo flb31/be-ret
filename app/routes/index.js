@@ -2,9 +2,9 @@
 
 var express = require('express')
 var app = express()
-var providers = require('./providers')
-var specialties = require('./specialties')
+var provider = require('./provider')
+var specialty = require('./specialty')
 
-app.use('/api', [providers, specialties])
+app.use('/api', [provider, specialty])
 
 module.exports = app
