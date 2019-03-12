@@ -93,7 +93,7 @@ function show(req, res) {
         
         if(err) {
             return res.status(500).send({
-                message: 'Error when founded specialty ',
+                message: 'Error when searched specialty ',
                 err
             })
         }

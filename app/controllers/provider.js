@@ -3,6 +3,7 @@
 var Provider = require('../models/provider')
 var config = require('../config')
 var moment = require('moment')
+var mongoose = require('mongoose')
 var stringUtil = require('../util/strings')
 var mongoUtil = require('../util/mongo')
 
@@ -76,7 +77,31 @@ function update(req, res) {
 }
 
 function show(req, res) {
-    res.status(200).send({ message: 'Provider get' })
+    var id = req.params.id
+
+    if( !mongoUtil.isValidateId(id) ) {
+        return res.status(400).send({ message: 'Invalid id' })
+    }
+
+    const _id = mongoose.Types.ObjectId(id)
+
+    Provider.findById(id).populate({path: 'Specialty'}).exec( (err, provider) => {
+        
+        if(err) {
+            return res.status(500).send({
+                message: 'Error when searched Provider ',
+                err
+            })
+        }
+
+        if(!provider) {
+            return  res.status(404).send({
+                message: 'Provider not found',
+            })
+        }
+
+        res.status(200).send(provider)
+    })
 }
 
 function remove(req, res) {
