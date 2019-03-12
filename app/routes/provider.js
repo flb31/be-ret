@@ -4,12 +4,13 @@ var express = require('express')
 var app = express()
 var router = express.Router()
 var ProviderController = require('../controllers/provider')
+var mdAuth = require('../middlewares/authenticated')
 
 router.get('/', ProviderController.index )
-router.post('/', ProviderController.create )
+router.post('/', mdAuth.ensureAuth, ProviderController.create )
 router.get('/:id', ProviderController.show )
-router.put('/:id', ProviderController.update )
-router.delete('/:id', ProviderController.remove )
+router.put('/:id', mdAuth.ensureAuth, ProviderController.update )
+router.delete('/:id', mdAuth.ensureAuth, ProviderController.remove )
 app.use('/providers', router)
 
 module.exports = app
