@@ -10,8 +10,8 @@ var ProviderSchema = Schema({
     middleName: String,
     email: String,
     specialty: {
-        type: Schema.ObjectId,
-        ref: 'Specialty'
+        type: Schema.Types.ObjectId,
+        ref: 'specialties'
     },
     status: String,
     createdAt: Date,

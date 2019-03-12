@@ -1,6 +1,7 @@
 'use strict'
 
 var Provider = require('../models/provider')
+var Specialty = require('../models/specialty')
 var config = require('../config')
 var moment = require('moment')
 var mongoose = require('mongoose')
@@ -30,7 +31,7 @@ function create(req, res) {
     provider.lastName = params.lastName
     provider.middleName = params.middleName
     provider.email = params.email
-    provider.specialty = params.specialty
+    provider.specialtyId = params.specialtyId
     provider.status = params.status
     provider.createdAt = moment().format()
     provider.updatedAt = provider.createdAt
@@ -52,24 +53,44 @@ function create(req, res) {
         return res.status(400).send({message: 'Status is not valid'})
     }
 
-    if( !mongoUtil.isValidateId(provider.specialty) ) {
+    if( !mongoUtil.isValidateId(provider.specialtyId) ) {
         return res.status(400).send({message: 'Specialty ID is not valid'})
     }
 
-    provider.save((err, providerStored) => {
+    // find specialty
+    Specialty.findById(provider.specialtyId).populate().exec( (err, specialtyRet) => {
+        
         if(err) {
             return res.status(500).send({
-                message: 'Error save provider',
-                err,
+                message: 'Error when searched specialty ',
+                err
             })
         }
-
-        if(!providerStored) {
-            return res.status(404).send({message: 'Provider not created'})
+        
+        if(!specialtyRet) {
+            return  res.status(404).send({
+                message: 'Specialty not found',
+            })
         }
+        
+        // Specialty found and now save provider
+        provider.specialty = specialtyRet
 
-        res.status(201).send({ provider: providerStored })
-    })
+        provider.save((err, providerStored) => {
+            if(err) {
+                return res.status(500).send({
+                    message: 'Error save provider',
+                    err,
+                })
+            }
+    
+            if(!providerStored) {
+                return res.status(404).send({message: 'Provider not created'})
+            }
+    
+            res.status(201).send({ provider: providerStored })
+        })
+    })    
 }
 
 function update(req, res) {
@@ -134,7 +155,7 @@ function show(req, res) {
 
     const _id = mongoose.Types.ObjectId(id)
 
-    Provider.findById(id).populate({path: 'Specialty'}).exec( (err, provider) => {
+    Provider.findById(id).populate({path: 'specialty'}).exec( (err, provider) => {
         
         if(err) {
             return res.status(500).send({
