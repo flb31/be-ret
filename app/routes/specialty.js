@@ -6,7 +6,7 @@ var router = express.Router()
 var SpecialtyController = require('../controllers/specialty')
 var mdAuth = require('../middlewares/authenticated')
 
-router.get('/:page?', SpecialtyController.index )
+router.get('/page/:page', SpecialtyController.index )
 router.post('/', mdAuth.ensureAuth, SpecialtyController.create )
 router.get('/:id',  SpecialtyController.show )
 router.put('/:id', mdAuth.ensureAuth, SpecialtyController.update )
