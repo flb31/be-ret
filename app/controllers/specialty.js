@@ -54,7 +54,7 @@ function update(req, res) {
 
     specialty.updatedAt = moment().format()
 
-    if( !mongoose.Types.ObjectId.isValid(id) ) {
+    if(validateId(id) ){
         return res.status(400).send({ message: 'Invalid id' })
     }
 
@@ -82,7 +82,7 @@ function update(req, res) {
 function show(req, res) {
     var id = req.params.id
 
-    if( !mongoose.Types.ObjectId.isValid(id) ) {
+    if(validateId(id) ){
         return res.status(400).send({ message: 'Invalid id' })
     }
 
@@ -108,7 +108,29 @@ function show(req, res) {
 }
 
 function remove(req, res) {
-    res.status(204).send({ message: 'Specialty delete' })
+
+    var id = req.params.id
+
+    if(validateId(id) ){
+        return res.status(400).send({ message: 'Invalid id' })
+    }
+
+    Specialty.findById(id).remove( (err) => {
+        if(err) {
+            return res.status(500).send({
+                message: 'Error remove Specialty',
+                err,
+            })
+        }
+
+        return res.status(200).send({
+            message: 'Specialty remove successfully'
+        })
+    })
+}
+
+function validateId(id) {
+    return !mongoose.Types.ObjectId.isValid(id)
 }
 
 module.exports = {
